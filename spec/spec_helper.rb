@@ -6,7 +6,7 @@ require 'shoulda-matchers'
 require 'employee'
 require 'project'
 require 'division'
-
+require 'contribution'
 
 
 database_configurations = YAML::load(File.open('./db/config.yml'))

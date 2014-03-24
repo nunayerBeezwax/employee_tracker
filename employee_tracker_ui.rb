@@ -102,7 +102,7 @@ def add_employee
   employee_name = gets.chomp
   puts "Enter the name of #{employee_name}'s Division"
   division_of_employee = gets.chomp
-  division = Division.all.first { |division| division.name == division_of_employee ? division : '' }
+  division = Division.search(division_of_employee)
   employee = division.employees.new({:name => employee_name, :division_id => division.id})
   division.save
   puts "'#{employee_name}' has been added to your employee list."
@@ -132,7 +132,8 @@ end
 def delete_employee
   puts "Enter the name of the employee to be deleted"
   del_employee = gets.chomp
-  Employee.all.each { |employee| employee.name == del_employee ? employee.destroy : '' }
+  employee = Employee.search(del_employee)
+  employee.destroy
   menu
 end
 
@@ -143,7 +144,7 @@ def add_project
   project_name = gets.chomp
   puts "Enter the name of the employee assigned to this project:"
   employee_of_project = gets.chomp
-  employee = Employee.all.first { |employee| employee.name == employee_of_project ? employee : ''}
+  employee = Employee.search(employee_of_project)
   project = employee.projects.new({:name => project_name, :employee_id => employee.id})
   employee.save
   "'#{project_name}' has been added to your projects list."
@@ -155,7 +156,7 @@ def add_employee
   employee_name = gets.chomp
   puts "Enter the name of #{employee_name}'s Division"
   division_of_employee = gets.chomp
-  division = Division.all.first { |division| division.name == division_of_employee ? division : '' }
+  division = Division.search(division_of_employee)
   employee = division.employees.new({:name => employee_name, :division_id => division.id})
   division.save
   puts "'#{employee_name}' has been added to your employee list."
@@ -166,27 +167,29 @@ def list_projects
   puts "Here is your list of your projects:"
   projects = Project.all
   projects.each { |project| puts project.name}
+  puts "Type the name of the project to see all employees working on that project."
+  project = gets.chomp
+  project = Project.search(project)
+  project.employees.each { |employee| puts employee.name }
   menu
 end
 
 def update_projects
-  puts "Enter the name of the project you want to update"
+  puts "Enter the name of the project you want to update:"
   project_to_update = gets.chomp
-  puts "Enter the project's updated name"
-  updated_project = gets.chomp
-  Project.all.each do |project|
-    if project.name == project_to_update
-      project.update_attribute(:name, updated_project)
-    end
-  end
+  puts "Enter the name of the employee you want to add to the project:"
+  new_employee = gets.chomp
+  new_employee = Employee.search(new_employee)
+  project_to_update = Project.search(project_to_update)
+  new_employee.projects << project_to_update
   project_portal
 end
 
 def delete_project
   puts "Enter the name of the project to be deleted"
   del_project = gets.chomp
-  Project.all.each { |project| project.name == del_project ? project.destroy : '' }
-  menu
+  project = Project.search(del_project)
+  project.destroy
 end
 
 # division methods
@@ -206,7 +209,7 @@ def list_divisions
   divisions.each { |division| puts division.name}
   puts "Type the name of the division to see all employees in that division."
   user_input = gets.chomp
-  division = Division.all.first { |division| division.name == user_input ? division : ''}
+  division = Division.search(user_input)
   division.employees.each { |employee| puts employee.name}
   menu
 end
@@ -228,8 +231,8 @@ end
 def delete_division
   puts "Enter the name of the division to be deleted"
   del_division = gets.chomp
-  Division.all.each { |division| division.name == del_division ? division.destroy : '' }
-  menu
+  division = Division.search(del_division)
+  division.destroy  menu
 end
 
 
